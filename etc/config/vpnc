@@ -1,0 +1,6 @@
+config samba
+	option 'gateway'	'vpn-server.uji.es'
+	option 'groupid'	'UJI'
+	option 'groupsecret'	'12345678'
+	option 'username'	'johnsmith'
+	option 'password'	'pocahontas'
