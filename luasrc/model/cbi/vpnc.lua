@@ -21,7 +21,8 @@ s.anonymous = true
 s:tab("general",  translate("General Settings"))
 s:tab("template",  translate("Template"))
 
-s:taboption("general", Value, "gateway", translate("Cisco VPN server hostname"))
+gateway = s:taboption("general", Value, "gateway", translate("Cisco VPN server hostname"))
+gateway.datatype = "hostname"
 s:taboption("general", Value, "groupid", translate("Group ID"))
 s:taboption("general", Value, "secret", translate("Group Password"))
 s:taboption("general", Value, "username", translate("Username"))
@@ -41,7 +42,6 @@ stop.inputstyle = "remove"
 stop.write = start.write
 
 function m.on_commit(map)
-	# Write file
 end
 
 return m
