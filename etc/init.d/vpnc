@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+START=75
+STOP=01
+
+create_vpnc_conf() {
+  config_get gateway $1 gateway
+  config_get groupid $1 groupid
+  config_get secret $1 secret
+  config_get username $1 username
+  config_get password $1 password
+
+  sed -e "s#|GATEWAY|#$gateway#g" \
+      -e "s#|GROUPID|#$groupid#g" \
+      -e "s#|SECRET|#$secret#g" \
+      -e "s#|USERNAME|#$username#g" \
+      -e "s#|PASSWORD|#$password#g" \
+      /etc/vpnc/default.conf.template > /etc/vpnc/default.conf
+}
+
+start() {
+  config_load vpnc
+  config_foreach create_vpnc_conf
+
+  /usr/bin/pgrep vpnc > /dev/null
+  if [ $? != 0 ]; then
+    vpnc
+  else
+    echo "vpnc already running"
+    exit 255 
+  fi
+}
+
+stop() {
+  vpnc-disconnect
+}

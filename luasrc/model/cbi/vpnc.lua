@@ -15,33 +15,86 @@ $Id: vpnc.lua 6984 2011-04-13 15:14:42Z soma $
 
 m = Map("vpnc", translate("VPNC"))
 
-s = m:section(TypedSection, "general", translate("VPNC General Settings"))
+s = m:section(TypedSection, "vpnc", translate("VPNC connection settings"))
 s.anonymous = true
 
-s:tab("general",  translate("General Settings"))
-s:tab("template",  translate("Template"))
+s:tab("vpnc",  translate("Connection Settings"))
 
-gateway = s:taboption("general", Value, "gateway", translate("Cisco VPN server hostname"))
+gateway = s:taboption("vpnc", Value, "gateway", translate("Cisco VPN server hostname"))
 gateway.datatype = "hostname"
-s:taboption("general", Value, "groupid", translate("Group ID"))
-s:taboption("general", Value, "secret", translate("Group Password"))
-s:taboption("general", Value, "username", translate("Username"))
-pw = s:taboption("general", Value, "password", translate("Password"))
+s:taboption("vpnc", Value, "groupid", translate("Group ID"))
+s:taboption("vpnc", Value, "secret", translate("Group Password"))
+s:taboption("vpnc", Value, "username", translate("Username"))
+pw = s:taboption("vpnc", Value, "password", translate("Password"))
 pw.password = true
 
-s = m:section(TypedSection, "status", translate("VPNC status"))
-s.anonymous = true
-start = s:option(Button, "start", translate("Start"))
-start.inputstyle = "apply"
-start.write = function(self, section)
-        luci.sys.call("/etc/init.d/vpnc %s >/dev/null" %{ self.option })
+local pid = luci.util.exec("/usr/bin/pgrep vpnc")
+
+function vpnc_process_status()
+  local status = "VPNC is not running now and "
+
+  if pid ~= "" then
+      status = "VPNC is running with the PID " .. pid .. "and "
+  end
+
+  if nixio.fs.access("/etc/rc.d/S75vpnc") then
+    status = status .. "it's enabled on the startup"
+  else
+    status = status .. "it's disabled on the startup"
+  end
+
+  local status = { status=status }
+  local table = { pid=status }
+  return table
 end
 
-stop = s:option(Button, "stop", translate("Stop"))
-stop.inputstyle = "remove"
-stop.write = start.write
+t = m:section(Table, vpnc_process_status())
+t.anonymous = true
 
-function m.on_commit(map)
+t:option(DummyValue, "status", translate("VPNC status"))
+
+if pid == "" then
+  start = t:option(Button, "_start", translate("Start"))
+  start.inputstyle = "apply"
+  function start.write(self, section)
+        luci.util.exec("/etc/init.d/vpnc start")
+        luci.util.exec("sleep 4")
+        luci.http.redirect(
+                luci.dispatcher.build_url("admin", "services", "vpnc")
+        )
+  end
+else
+  stop = t:option(Button, "_stop", translate("Stop"))
+  stop.inputstyle = "reset"
+  function stop.write(self, section)
+        luci.util.exec("/etc/init.d/vpnc stop")
+        luci.util.exec("sleep 4")
+        luci.http.redirect(
+                luci.dispatcher.build_url("admin", "services", "vpnc")
+        )
+  end
+end
+
+if nixio.fs.access("/etc/rc.d/S75vpnc") then
+  disable = t:option(Button, "_disable", translate("Disable from startup"))
+  disable.inputstyle = "remove"
+  function disable.write(self, section)
+        luci.util.exec("/etc/init.d/vpnc disable")
+        luci.util.exec("sleep 1")
+        luci.http.redirect(
+                luci.dispatcher.build_url("admin", "services", "vpnc")
+        )
+  end
+else
+  enable = t:option(Button, "_enable", translate("Enable on startup"))
+  enable.inputstyle = "apply"
+  function enable.write(self, section)
+        luci.util.exec("/etc/init.d/vpnc enable")
+        luci.util.exec("sleep 1")
+        luci.http.redirect(
+                luci.dispatcher.build_url("admin", "services", "vpnc")
+        )
+  end
 end
 
 return m
