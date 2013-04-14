@@ -29,6 +29,7 @@ pw = s:taboption("vpnc", Value, "password", translate("Password"))
 pw.password = true
 
 local pid = luci.util.exec("/usr/bin/pgrep vpnc")
+local message = luci.http.formvalue("message")
 
 function vpnc_process_status()
   local status = "VPNC is not running now and "
@@ -43,7 +44,7 @@ function vpnc_process_status()
     status = status .. "it's disabled on the startup"
   end
 
-  local status = { status=status }
+  local status = { status=status, message=message }
   local table = { pid=status }
   return table
 end
@@ -53,14 +54,18 @@ t.anonymous = true
 
 t:option(DummyValue, "status", translate("VPNC status"))
 
+if message then
+  t:option(DummyValue, "message", translate("VPNC start message"))
+end
+
 if pid == "" then
   start = t:option(Button, "_start", translate("Start"))
   start.inputstyle = "apply"
   function start.write(self, section)
-        luci.util.exec("/etc/init.d/vpnc start")
+        message = luci.util.exec("/etc/init.d/vpnc start 2>&1")
         luci.util.exec("sleep 4")
         luci.http.redirect(
-                luci.dispatcher.build_url("admin", "services", "vpnc")
+                luci.dispatcher.build_url("admin", "services", "vpnc") .. "?message=" .. message
         )
   end
 else

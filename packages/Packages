@@ -1,0 +1,10 @@
+Package: luci-app-vpnc
+Version: 0.1
+Architecture: all
+Maintainer: David Rubert <david.rubert@gmail.com>
+Depends: vpnc
+Section: luci
+Priority: optional
+Description: LuCI GUI to the VPNC program
+Filename: luci-app-vpnc_0.1_all.ipk
+Source: luci-app-vpnc
