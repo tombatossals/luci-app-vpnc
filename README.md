@@ -9,7 +9,7 @@ Install instructions:
 * Add a new line with the repository of the "luci-app-vpnc" package, like this:
 
 ```
-src luci-app-vpnc http://10.228.144.163/openwrt
+src luci-app-vpnc http://openwrt.qui.guifi.net
 ```
 
 ![Adding a new repository](https://raw.github.com/tombatossals/luci-app-vpnc/master/images/opkg.conf.png)
