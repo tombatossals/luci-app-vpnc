@@ -1,9 +1,6 @@
-config general
+config vpnc
 	option gateway 'vpn-server.uji.es'
 	option groupid 'UJI'
 	option secret '12345678'
-	option username 'vrubert'
-	option password 'ppp2'
-
-config status
-	option startup true
+	option username 'ujiusername'
+	option password 'ujipassword'

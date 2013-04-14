@@ -9,8 +9,9 @@ Version: 0.1
 Architecture: all
 Maintainer: David Rubert <david.rubert@gmail.com>
 Section: luci
+Depends: vpnc
 Priority: optional
 Description: LuCI GUI to the VPNC program
-Source: http://github.com/tombatossals/luci-app-vpnc
+Source: luci-app-vpnc
 EOF
 opkg-build -o root -g root dist /tmp
