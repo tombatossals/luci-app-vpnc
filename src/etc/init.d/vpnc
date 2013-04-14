@@ -23,7 +23,7 @@ start() {
 
   /usr/bin/pgrep vpnc > /dev/null
   if [ $? != 0 ]; then
-    vpnc
+    vpnc --non-inter
   else
     echo "vpnc already running"
     exit 255 
