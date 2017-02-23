@@ -20,8 +20,8 @@ s.anonymous = true
 
 s:tab("vpnc",  translate("Connection Settings"))
 
-gateway = s:taboption("vpnc", Value, "gateway", translate("Cisco VPN server hostname"))
-gateway.datatype = "hostname"
+gateway = s:taboption("vpnc", Value, "gateway", translate("Host"))
+gateway.datatype = "host"
 s:taboption("vpnc", Value, "groupid", translate("Group ID"))
 s:taboption("vpnc", Value, "secret", translate("Group Password"))
 s:taboption("vpnc", Value, "username", translate("Username"))
